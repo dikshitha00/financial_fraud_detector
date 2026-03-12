@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Fraud Detector AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --panel-bg: rgba(22, 27, 34, 0.7);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-main: #c9d1d9;
+            --text-heading: #ffffff;
+            --accent: #58a6ff;
+            --accent-hover: #1f6feb;
+            --danger: #f85149;
+            --success: #3fb950;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .history-container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 1s ease-out;
+            overflow-x: auto;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1,
+        h2.section-title {
+            color: var(--text-heading);
+            font-size: 28px;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+        }
+
+        h1 {
+            justify-content: center;
+            gap: 10px;
+        }
+
+        h2.section-title {
+            font-size: 22px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-heading);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(31, 111, 235, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result-card {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            display: none;
+            border: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.3);
+            animation: pulseIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes pulseIn {
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .result-card.success {
+            display: block;
+            border-color: rgba(63, 185, 80, 0.4);
+            box-shadow: 0 0 20px rgba(63, 185, 80, 0.1);
+        }
+
+        .result-card.success h2 {
+            color: var(--success);
+        }
+
+        .result-card.danger {
+            display: block;
+            border-color: rgba(248, 81, 73, 0.4);
+            box-shadow: 0 0 20px rgba(248, 81, 73, 0.15);
+        }
+
+        .result-card.danger h2 {
+            color: var(--danger);
+        }
+
+        #result-text {
+            font-size: 22px;
+            margin: 0 0 10px 0;
+            font-weight: 800;
+        }
+
+        .score-pill {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .loader {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(88, 166, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* History Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-heading);
+            background: rgba(255, 255, 255, 0.05);
+            white-space: nowrap;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge.normal {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--success);
+        }
+
+        .badge.suspicious {
+            background: rgba(248, 81, 73, 0.2);
+            color: var(--danger);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Analytics Form -->
+    <div class="container">
+        <h1>🛡️ Fraud Guard AI</h1>
+
+        <div class="form-group">
+            <label for="amount">Transaction Amount ($)</label>
+            <input type="number" id="amount" placeholder="e.g. 50.00" value="50">
+        </div>
+
+        <div class="form-group">
+            <label for="time">Time of Transaction (Hour)</label>
+            <input type="number" id="time" min="0" max="23" placeholder="0 - 23" value="12">
+        </div>
+
+        <div class="form-group">
+            <label for="location">Location</label>
+            <select id="location">
+                <option value="Sangareddy">Sangareddy</option>
+                <option value="Patancheru">Patancheru</option>
+                <option value="Rangareddy">Rangareddy</option>
+                <option value="Hyderabad">Hyderabad</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="merchant">Merchant Type</label>
+            <select id="merchant">
+                <option value="Retail">Retail</option>
+                <option value="Restaurant">Restaurant</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Luxury">Luxury</option>
+                <option value="Online">Online</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="device">Device Type</label>
+            <select id="device">
+                <option value="Mobile">Mobile</option>
+                <option value="Desktop">Desktop</option>
+                <option value="Tablet">Tablet</option>
+                <option value="Unknown">Unknown</option>
+            </select>
+        </div>
+
+        <button id="submitBtn" onclick="checkFraud()">Analyze Transaction</button>
+
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+        </div>
+
+        <div class="result-card" id="resultCard">
+            <h2 id="result-text"></h2>
+            <div class="score-pill">Risk Score: <span id="risk-score"></span>/100</div>
+        </div>
+    </div>
+
+    <!-- History Table -->
+    <div class="history-container">
+        <h2 class="section-title">🕒 Recent Transactions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Amount</th>
+                    <th>Location</th>
+                    <th>Merchant</th>
+                    <th>Risk Score</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="history-tbody">
+                <!-- Dynamic content will load here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadHistory() {
+            try {
+                const response = await fetch("/history");
+                const data = await response.json();
+
+                const tbody = document.getElementById("history-tbody");
+                tbody.innerHTML = "";
+
+                if (data.length === 0) {
+                    tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No recent transactions found.</td></tr>";
+                    return;
+                }
+
+                data.forEach(t => {
+                    const tr = document.createElement("tr");
+                    const statusClass = t.prediction === "NORMAL" ? "normal" : "suspicious";
+
+                    tr.innerHTML = `
+                <td>${t.timestamp}</td>
+                <td>$${t.amount.toFixed(2)}</td>
+                <td>${t.location}</td>
+                <td>${t.merchant_type}</td>
+                <td>${t.risk_score}</td>
+                <td><span class="badge ${statusClass}">${t.prediction}</span></td>
+            `;
+                    tbody.appendChild(tr);
+                });
+            } catch (e) {
+                console.error("Error loading history", e);
+            }
+        }
+
+        // Load on page load
+        window.onload = loadHistory;
+
+        async function checkFraud() {
+            // UI states
+            const btn = document.getElementById("submitBtn");
+            const loader = document.getElementById("loader");
+            const resultCard = document.getElementById("resultCard");
+
+            btn.disabled = true;
+            loader.style.display = "block";
+            resultCard.className = "result-card"; // reset classes
+
+            // Get values
+            const amount = document.getElementById("amount").value;
+            const time = document.getElementById("time").value;
+            const location = document.getElementById("location").value;
+            const merchant = document.getElementById("merchant").value;
+            const device = document.getElementById("device").value;
+
+            try {
+                const response = await fetch("/check", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        amount: amount,
+                        time: time,
+                        location: location,
+                        merchant_type: merchant,
+                        device_type: device
+                    })
+                });
+
+                const data = await response.json();
+
+                // Update UI
+                document.getElementById("result-text").innerText = data.result;
+                document.getElementById("risk-score").innerText = data.score;
+
+                if (data.result.includes("SUSPICIOUS")) {
+                    resultCard.className = "result-card danger";
+                } else {
+                    resultCard.className = "result-card success";
+                }
+
+                // Refresh history table after analyzing
+                await loadHistory();
+
+            } catch (e) {
+                document.getElementById("result-text").innerText = "Connection Error";
+                document.getElementById("risk-score").innerText = "--";
+                resultCard.className = "result-card danger";
+            } finally {
+                btn.disabled = false;
+                loader.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
