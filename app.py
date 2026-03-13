@@ -6,7 +6,7 @@ import joblib
 import os
 import datetime
 
-app = Flask(__name__, static_folder=".")
+app = Flask(__name__, static_folder="frontend")
 CORS(app)
 
 # Database configuration
@@ -50,7 +50,7 @@ except FileNotFoundError:
 
 @app.route("/")
 def home():
-    return send_from_directory(".", "index.html")
+    return send_from_directory("frontend", "index.html")
 
 @app.route("/check", methods=["POST"])
 def check():
